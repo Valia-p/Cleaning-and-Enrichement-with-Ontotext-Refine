@@ -1,0 +1,93 @@
+@prefix dbo: <http://dbpedia.org/ontology/> .
+@prefix ex: <http://example.org/ontology/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Rule 1
+# Actors must act in at least one film.
+
+ex:ActorShape a sh:NodeShape ;
+    sh:targetClass dbo:Actor ;
+    sh:property [
+        a sh:PropertyShape ;
+        sh:path ex:actedIn ;
+        sh:class dbo:Film ;
+        sh:minCount 1
+    ] .
+
+# Rule 2
+# Each film must include a title, one release date, at least one director and at least one producer.
+
+ex:FilmShape a sh:NodeShape ;
+    sh:property [ sh:class ex:Director ;
+            sh:minCount 1 ;
+            sh:path dbo:director ],
+        [ sh:datatype xsd:string ;
+            sh:minCount 1 ;
+            sh:path dbo:title ],
+        [ sh:class dbo:Producer ;
+            sh:minCount 1 ;
+            sh:path dbo:producer ],
+        [ sh:datatype xsd:date ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path ex:filmReleaseDate ];
+    sh:targetClass dbo:Film .
+
+# Rule 3
+# Songs must have a title, one release date, one recording date and at least one artist.
+
+ex:SongShape a sh:NodeShape ;
+    sh:property 
+        [ sh:datatype xsd:date;
+          sh:maxCount 1 ;
+          sh:minCount 1 ;
+          sh:path ex:songReleaseDate ],
+        [ sh:datatype xsd:string ;
+          sh:minCount 1 ;
+          sh:path dbo:title ],
+        [ sh:datatype xsd:date;
+          sh:maxCount 1 ;
+          sh:minCount 1 ;
+          sh:path ex:recordedDate ],
+        [ sh:class dbo:MusicalArtist ;
+          sh:minCount 1 ;
+          sh:path dbo:artist ] ;
+    sh:targetClass dbo:Song .
+
+# Rule 4
+# Each film must have a unique combination of title and release date.
+
+ex:FilmKeyShape a sh:NodeShape ;
+    sh:targetClass dbo:Film ;
+    sh:property [
+        sh:path dbo:title ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+	sh:datatype xsd:date;
+        sh:path ex:filmReleaseDate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+
+# Rule 5
+# Each Song must have a unique combination of title and recorded date.
+
+ex:SongKeyShape a sh:NodeShape ;
+    sh:targetClass dbo:Song ;
+    sh:property [
+        sh:path dbo:title ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+    ] ;
+
+    sh:property [
+	sh:datatype xsd:date;
+        sh:path ex:recordedDate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
