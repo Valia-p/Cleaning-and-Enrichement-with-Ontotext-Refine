@@ -1,0 +1,65 @@
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?actor ?actorLabel ?film ?filmLabel
+WHERE {
+  ?filmLocal a dbo:Film ;
+             dbo:starring ?actor .
+
+  SERVICE <https://query.wikidata.org/sparql> {
+    ?film wdt:P161 ?actor .
+    ?film rdfs:label ?filmLabel .
+    ?actor rdfs:label ?actorLabel .
+    FILTER (lang(?filmLabel) = "en")
+    FILTER (lang(?actorLabel) = "en")
+  }
+  FILTER (?film != ?filmLocal)
+}
+LIMIT 30
+
+
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?film ?filmLabel ?awardLabel
+WHERE {
+  ?film a dbo:Film .
+
+  SERVICE <https://query.wikidata.org/sparql> {
+    ?film wdt:P166 ?award .
+    ?film rdfs:label ?filmLabel .
+    ?award rdfs:label ?awardLabel .
+    FILTER (lang(?filmLabel) = "en")
+    FILTER (lang(?awardLabel) = "en")
+  }
+}
+LIMIT 30
+
+
+
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?artist ?artistLabel ?song ?songLabel
+WHERE {
+  ?artist a dbo:MusicalArtist .
+
+  SERVICE <https://query.wikidata.org/sparql> {
+    ?song wdt:P175 ?artist . 
+    ?song rdfs:label ?songLabel .
+    ?artist rdfs:label ?artistLabel .
+    FILTER (lang(?songLabel) = "en")
+    FILTER (lang(?artistLabel) = "en")
+  }
+
+  FILTER NOT EXISTS {
+    ?localSong a dbo:Song .
+    FILTER(?localSong = ?song)
+  }
+}
+LIMIT 30
+
+
